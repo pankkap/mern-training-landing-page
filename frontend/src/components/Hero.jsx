@@ -94,11 +94,10 @@ function Hero({ onReserve }) {
             </div>
 
             {/* reservation note */}
-            <div className="w-full rounded-lg border border-red-700 bg-red-600 px-4 py-3 lg:max-w-xl">
-              <p className="text-sm leading-relaxed text-white">
+            <div className="w-full rounded-xl border border-red-400/70 bg-gradient-to-r from-red-600 to-rose-600 px-5 py-3.5 text-left shadow-[0_0_28px_rgba(239,68,68,0.45)] lg:max-w-xl">
+              <p className="text-sm leading-relaxed text-white sm:text-[15px]">
                 <span className="font-bold text-white">Register now at Rs. 7,500 for first 50 students.</span>{' '}
-                Otherwise, the fee will be Rs. 10,500 from{' '}
-                <span className="font-semibold text-white">1st June, 2026</span>. Register now.
+                Otherwise, the fee will be <span className="rounded bg-amber-400/20 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-amber-400">Rs. 10,500 from 1st June, 2026.</span> Register now.
               </p>
             </div>
 
