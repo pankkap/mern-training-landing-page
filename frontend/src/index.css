@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+  color: #111827;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@layer components {
+  .page-shell {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-heading {
+    @apply text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl;
+  }
+
+  .star-fill {
+    @apply fill-amber-400 text-amber-400;
+  }
+}
+
+@layer utilities {
+  .card {
+    @apply rounded-2xl border border-gray-200 bg-white;
+  }
+
+  .card-shadow {
+    box-shadow: 0 4px 24px -8px rgba(17, 24, 39, 0.14);
+  }
+
+  .tech-marquee {
+    position: relative;
+    overflow: hidden;
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  }
+
+  .tech-marquee-track {
+    display: flex;
+    width: max-content;
+    align-items: center;
+    gap: 1rem;
+    animation: tech-marquee-scroll 32s linear infinite;
+  }
+
+  .tech-marquee-reverse .tech-marquee-track {
+    animation-direction: reverse;
+  }
+
+  .tech-logo-chip {
+    display: flex;
+    height: 72px;
+    width: 120px;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1.25rem;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    background: rgba(248, 250, 252, 0.85);
+    transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .tech-logo-chip:hover {
+    transform: translateY(-2px);
+    border-color: rgba(165, 180, 252, 0.9);
+    background: rgba(255, 255, 255, 0.98);
+  }
+
+  .tech-logo-image {
+    height: 34px;
+    width: 34px;
+    object-fit: contain;
+  }
+
+  .tech-logo-fallback {
+    max-width: 84px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #334155;
+  }
+}
+
+@keyframes tech-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
