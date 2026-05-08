@@ -188,7 +188,8 @@ function ModalForm({ open, onClose, resumePayment }) {
           localStorage.removeItem(PENDING_REGISTRATION_KEY)
           navigate('/success', {
             state: {
-              paymentUpdated: !updateError,
+              paymentUpdated: true,
+              paymentSynced: !updateError,
               registrationId,
               transactionId: response.razorpay_payment_id,
             },

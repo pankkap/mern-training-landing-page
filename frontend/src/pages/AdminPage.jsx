@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CheckCircle2, RotateCcw, Trash2 } from 'lucide-react'
 import { supabase } from '../lib/supabaseClient'
@@ -16,7 +16,7 @@ function AdminPage() {
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [exporting, setExporting] = useState(false)
 
-  const loadPaidRegistrations = async () => {
+  const loadPaidRegistrations = useCallback(async () => {
     const { data: registrations, error: registrationsError } = await supabase
       .from('registrations')
       .select('id,name,email,phone,amount,payment_status,payment_review_status,razorpay_payment_id,paid_at,created_at')
@@ -28,7 +28,7 @@ function AdminPage() {
     } else {
       setPaidRegistrations(registrations || [])
     }
-  }
+  }, [])
 
   useEffect(() => {
     const loadSession = async () => {
@@ -80,7 +80,29 @@ function AdminPage() {
     }
 
     checkAdminAndLoadData()
-  }, [session])
+  }, [loadPaidRegistrations, session])
+
+  useEffect(() => {
+    if (!isAdmin) {
+      return undefined
+    }
+
+    const channel = supabase
+      .channel('admin-registrations-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'registrations' }, () => {
+        loadPaidRegistrations()
+      })
+      .subscribe()
+
+    const intervalId = setInterval(() => {
+      loadPaidRegistrations()
+    }, 15000)
+
+    return () => {
+      clearInterval(intervalId)
+      supabase.removeChannel(channel)
+    }
+  }, [isAdmin, loadPaidRegistrations])
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -275,7 +297,7 @@ function AdminPage() {
                     <th className="px-4 py-3">Phone</th>
                     <th className="px-4 py-3">Amount</th>
                     <th className="px-4 py-3">Transaction ID</th>
-                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3">Payment Status</th>
                     <th className="px-4 py-3">Paid At</th>
                     <th className="px-4 py-3">Action</th>
                   </tr>
@@ -291,12 +313,14 @@ function AdminPage() {
                       <td className="px-4 py-3">
                         <span
                           className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${
-                            row.payment_review_status === 'checked'
+                            row.payment_status === 'paid'
                               ? 'bg-green-100 text-green-700'
-                              : 'bg-amber-100 text-amber-700'
+                              : row.payment_status === 'failed'
+                                ? 'bg-red-100 text-red-700'
+                                : 'bg-amber-100 text-amber-700'
                           }`}
                         >
-                          {row.payment_review_status === 'checked' ? 'Checked' : 'Pending'}
+                          {row.payment_status === 'paid' ? 'Paid' : row.payment_status === 'failed' ? 'Failed' : 'Pending'}
                         </span>
                       </td>
                       <td className="px-4 py-3">{row.paid_at ? new Date(row.paid_at).toLocaleString() : '-'}</td>

@@ -2,7 +2,8 @@ import { Link, Navigate, useLocation } from 'react-router-dom'
 
 function SuccessPage() {
   const location = useLocation()
-  const paymentUpdated = location.state?.paymentUpdated === true
+  const paymentUpdated = location.state?.paymentUpdated === true || Boolean(location.state?.transactionId)
+  const paymentSynced = location.state?.paymentSynced !== false
 
   if (!paymentUpdated) {
     return <Navigate to="/" replace state={{ openPaymentUpdate: true }} />
@@ -25,6 +26,11 @@ function SuccessPage() {
             betalabsindia@gmail.com
           </a>
         </p>
+        {!paymentSynced && (
+          <p className="mt-4 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
+            Payment is successful, but dashboard sync may take a moment. Please refresh Admin shortly.
+          </p>
+        )}
         <Link
           to="/"
           className="mt-6 inline-block rounded-lg bg-indigo-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-indigo-700"
