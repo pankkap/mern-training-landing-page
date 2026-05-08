@@ -6,7 +6,6 @@ function Navbar({ onReserve }) {
     { href: '#curriculum', label: 'Curriculum' },
     { href: '#instructor', label: 'Instructor' },
     { href: '#reviews', label: 'Reviews' },
-    { href: '/admin', label: 'Admin' },
   ]
 
   return (
