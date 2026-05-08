@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 
-const PAYMENT_AMOUNT = 5
+const PAYMENT_AMOUNT = 10
 const initialForm = { name: '', email: '', phone: '' }
 const PENDING_REGISTRATION_KEY = 'pending_registration_id'
 // Razorpay test payment-link reference: https://rzp.io/rzp/ebTYN8xo
