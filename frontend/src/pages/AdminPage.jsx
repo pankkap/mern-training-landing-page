@@ -80,7 +80,7 @@ function AdminPage() {
     let unsubscribeRegistrations
 
     const checkAdminAndLoadData = async () => {
-      if (!session?.user?.id) {
+      if (!session?.user?.uid) {
         setIsAdmin(false)
         setPaidRegistrations([])
         return
@@ -88,7 +88,7 @@ function AdminPage() {
 
       setAuthError('')
 
-      const profileRef = doc(db, 'profiles', session.user.id)
+      const profileRef = doc(db, 'profiles', session.user.uid)
       const profileSnapshot = await getDoc(profileRef)
       const profile = profileSnapshot.exists() ? profileSnapshot.data() : null
 
@@ -184,7 +184,7 @@ function AdminPage() {
         Phone: row.phone,
         Amount: row.amount,
         TransactionId: row.razorpay_payment_id || '',
-        Status: row.payment_review_status,
+        Status: row.payment_status === 'paid' ? 'Paid' : 'Pending',
         PaidAt: row.paid_at ? toDate(row.paid_at)?.toLocaleString() : '',
       }))
 
