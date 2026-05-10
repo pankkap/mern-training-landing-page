@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../lib/firebaseClient'
 
-const PAYMENT_AMOUNT = 2
+const PAYMENT_AMOUNT = 7500
 const initialForm = { name: '', email: '', phone: '' }
 const PENDING_REGISTRATION_KEY = 'pending_registration_id'
 const PENDING_PAYMENT_UPDATE_KEY = 'pending_payment_update'
