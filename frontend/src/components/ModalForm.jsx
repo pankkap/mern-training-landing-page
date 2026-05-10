@@ -1,13 +1,32 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabaseClient'
+import { doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
+import { db } from '../lib/firebaseClient'
 
-const PAYMENT_AMOUNT = 10
+const PAYMENT_AMOUNT = 2
 const initialForm = { name: '', email: '', phone: '' }
 const PENDING_REGISTRATION_KEY = 'pending_registration_id'
+const PENDING_PAYMENT_UPDATE_KEY = 'pending_payment_update'
 // Razorpay test payment-link reference: https://rzp.io/rzp/ebTYN8xo
 const RAZORPAY_CHECKOUT_SCRIPT = 'https://checkout.razorpay.com/v1/checkout.js'
 const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID
+
+const retryFirestoreUpdate = async (registrationId, updateData, maxRetries = 4) => {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      await updateDoc(doc(db, 'registrations', registrationId), {
+        ...updateData,
+        updated_at: serverTimestamp(),
+      })
+      console.log(`[Payment] Firestore update attempt ${attempt} — success`)
+      return { success: true }
+    } catch (err) {
+      console.log(`[Payment] DB update attempt ${attempt} — exception:`, err)
+    }
+    if (attempt < maxRetries) await new Promise((r) => setTimeout(r, 800 * attempt))
+  }
+  return { success: false }
+}
 
 const loadRazorpayScript = () => new Promise((resolve) => {
   if (window.Razorpay) {
@@ -77,18 +96,21 @@ function ModalForm({ open, onClose, resumePayment }) {
     try {
       setLoading(true)
       const newRegistrationId = crypto.randomUUID()
-      const { error } = await supabase
-        .from('registrations')
-        .insert({
-          id: newRegistrationId,
-          name: form.name.trim(),
-          email: form.email.trim().toLowerCase(),
-          phone: form.phone.trim(),
-          amount: PAYMENT_AMOUNT,
-          payment_status: 'pending',
-        })
-
-      if (error) throw error
+      await setDoc(doc(db, 'registrations', newRegistrationId), {
+        id: newRegistrationId,
+        name: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
+        phone: form.phone.trim(),
+        amount: PAYMENT_AMOUNT,
+        payment_status: 'pending',
+        payment_review_status: 'pending',
+        razorpay_payment_id: null,
+        razorpay_order_id: null,
+        razorpay_signature: null,
+        paid_at: null,
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp(),
+      })
 
       localStorage.setItem(PENDING_REGISTRATION_KEY, newRegistrationId)
       setRegistrationId(newRegistrationId)
@@ -157,46 +179,40 @@ function ModalForm({ open, onClose, resumePayment }) {
         },
       },
       handler: async (response) => {
-        let updateError = null
-        try {
-          console.log('[Payment] Handler fired. registrationId:', registrationId, 'response:', response)
-          const { error } = await supabase
-            .from('registrations')
-            .update({
-              payment_status: 'paid',
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id || null,
-              razorpay_signature: response.razorpay_signature || null,
-              paid_at: new Date().toISOString(),
-            })
-            .eq('id', registrationId)
-
-          console.log('[Payment] Supabase update error:', error)
-          if (error) {
-            updateError = error
-          }
-        } catch (error) {
-          updateError = error
-        } finally {
-          if (updateError) {
-            setErrors((prev) => ({
-              ...prev,
-              payment: 'Payment completed, but database sync is delayed. Please refresh Admin in a moment.',
-            }))
-          }
-
-          localStorage.removeItem(PENDING_REGISTRATION_KEY)
-          navigate('/success', {
-            state: {
-              paymentUpdated: true,
-              paymentSynced: !updateError,
-              registrationId,
-              transactionId: response.razorpay_payment_id,
-            },
-          })
-
-          setVerifyingPayment(false)
+        const updateData = {
+          payment_status: 'paid',
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_order_id: response.razorpay_order_id || null,
+          razorpay_signature: response.razorpay_signature || null,
+          paid_at: new Date().toISOString(),
         }
+
+        // Save payment data to localStorage so SuccessPage can retry if fetch fails here
+        localStorage.setItem(PENDING_PAYMENT_UPDATE_KEY, JSON.stringify({
+          registrationId,
+          updateData,
+        }))
+
+        console.log('[Payment] Handler fired. registrationId:', registrationId, 'paymentId:', response.razorpay_payment_id)
+
+        const { success } = await retryFirestoreUpdate(registrationId, updateData)
+        console.log('[Payment] Firestore update success:', success)
+
+        if (success) {
+          localStorage.removeItem(PENDING_REGISTRATION_KEY)
+          localStorage.removeItem(PENDING_PAYMENT_UPDATE_KEY)
+        }
+
+        navigate('/success', {
+          state: {
+            paymentUpdated: true,
+            paymentSynced: success,
+            registrationId,
+            transactionId: response.razorpay_payment_id,
+          },
+        })
+
+        setVerifyingPayment(false)
       },
     }
 

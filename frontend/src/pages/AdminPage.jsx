@@ -1,7 +1,25 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { CheckCircle2, RotateCcw, Trash2 } from 'lucide-react'
-import { supabase } from '../lib/supabaseClient'
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth'
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  onSnapshot,
+  orderBy,
+  query,
+  serverTimestamp,
+  updateDoc,
+} from 'firebase/firestore'
+import { auth, db } from '../lib/firebaseClient'
+
+const toDate = (value) => {
+  if (!value) return null
+  if (value?.toDate) return value.toDate()
+  return new Date(value)
+}
 
 function AdminPage() {
   const [session, setSession] = useState(null)
@@ -17,38 +35,50 @@ function AdminPage() {
   const [exporting, setExporting] = useState(false)
 
   const loadPaidRegistrations = useCallback(async () => {
-    const { data: registrations, error: registrationsError } = await supabase
-      .from('registrations')
-      .select('id,name,email,phone,amount,payment_status,payment_review_status,razorpay_payment_id,paid_at,created_at')
-      .order('created_at', { ascending: false })
+    try {
+      setTableLoading(true)
+      setAuthError('')
 
-    if (registrationsError) {
-      setAuthError(registrationsError.message || 'Failed to load registrations.')
+      const registrationsQuery = query(
+        collection(db, 'registrations'),
+        orderBy('created_at', 'desc'),
+      )
+
+      const unsubscribe = onSnapshot(
+        registrationsQuery,
+        (snapshot) => {
+          const registrations = snapshot.docs.map((entry) => ({ id: entry.id, ...entry.data() }))
+          setPaidRegistrations(registrations)
+          setTableLoading(false)
+        },
+        (error) => {
+          setAuthError(error.message || 'Failed to load registrations.')
+          setPaidRegistrations([])
+          setTableLoading(false)
+        },
+      )
+
+      return unsubscribe
+    } catch (error) {
+      setAuthError(error.message || 'Failed to load registrations.')
       setPaidRegistrations([])
-    } else {
-      setPaidRegistrations(registrations || [])
+      setTableLoading(false)
+      return () => {}
     }
   }, [])
 
   useEffect(() => {
-    const loadSession = async () => {
-      const { data } = await supabase.auth.getSession()
-      setSession(data.session)
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setSession(user ? { user } : null)
       setAuthLoading(false)
-    }
-
-    loadSession()
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      setSession(nextSession)
     })
 
-    return () => subscription.unsubscribe()
+    return () => unsubscribe()
   }, [])
 
   useEffect(() => {
+    let unsubscribeRegistrations
+
     const checkAdminAndLoadData = async () => {
       if (!session?.user?.id) {
         setIsAdmin(false)
@@ -56,62 +86,43 @@ function AdminPage() {
         return
       }
 
-      setTableLoading(true)
       setAuthError('')
 
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .single()
+      const profileRef = doc(db, 'profiles', session.user.id)
+      const profileSnapshot = await getDoc(profileRef)
+      const profile = profileSnapshot.exists() ? profileSnapshot.data() : null
 
-      if (profileError || !profile || profile.role !== 'admin') {
+      if (!profile || profile.role !== 'admin') {
         setIsAdmin(false)
-        setTableLoading(false)
         setAuthError('You are signed in, but this account does not have admin access.')
         return
       }
 
       setIsAdmin(true)
+      unsubscribeRegistrations = await loadPaidRegistrations()
+    }
 
-      await loadPaidRegistrations()
-
+    checkAdminAndLoadData().catch((error) => {
+      setAuthError(error.message || 'Unable to load admin data right now.')
+      setIsAdmin(false)
       setTableLoading(false)
-    }
-
-    checkAdminAndLoadData()
-  }, [loadPaidRegistrations, session])
-
-  useEffect(() => {
-    if (!isAdmin) {
-      return undefined
-    }
-
-    const channel = supabase
-      .channel('admin-registrations-live')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'registrations' }, () => {
-        loadPaidRegistrations()
-      })
-      .subscribe()
-
-    const intervalId = setInterval(() => {
-      loadPaidRegistrations()
-    }, 15000)
+    })
 
     return () => {
-      clearInterval(intervalId)
-      supabase.removeChannel(channel)
+      if (unsubscribeRegistrations) {
+        unsubscribeRegistrations()
+      }
     }
-  }, [isAdmin, loadPaidRegistrations])
+  }, [loadPaidRegistrations, session])
 
   const handleLogin = async (event) => {
     event.preventDefault()
     setAuthError('')
     setAuthLoading(true)
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-
-    if (error) {
+    try {
+      await signInWithEmailAndPassword(auth, email, password)
+    } catch (error) {
       setAuthError(error.message || 'Unable to sign in right now.')
     }
 
@@ -119,7 +130,7 @@ function AdminPage() {
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    await signOut(auth)
     setIsAdmin(false)
     setPaidRegistrations([])
   }
@@ -129,17 +140,16 @@ function AdminPage() {
     setActionLoadingId(row.id)
     setAuthError('')
 
-    const { error } = await supabase
-      .from('registrations')
-      .update({ payment_review_status: nextStatus })
-      .eq('id', row.id)
-
-    if (error) {
-      setAuthError(error.message || 'Failed to update payment review status.')
-    } else {
+    try {
+      await updateDoc(doc(db, 'registrations', row.id), {
+        payment_review_status: nextStatus,
+        updated_at: serverTimestamp(),
+      })
       setPaidRegistrations((current) => current.map((r) => (
         r.id === row.id ? { ...r, payment_review_status: nextStatus } : r
       )))
+    } catch (error) {
+      setAuthError(error.message || 'Failed to update payment review status.')
     }
 
     setActionLoadingId(null)
@@ -149,15 +159,11 @@ function AdminPage() {
     setActionLoadingId(registrationId)
     setAuthError('')
 
-    const { error } = await supabase
-      .from('registrations')
-      .delete()
-      .eq('id', registrationId)
-
-    if (error) {
-      setAuthError(error.message || 'Failed to delete registration record.')
-    } else {
+    try {
+      await deleteDoc(doc(db, 'registrations', registrationId))
       setPaidRegistrations((current) => current.filter((row) => row.id !== registrationId))
+    } catch (error) {
+      setAuthError(error.message || 'Failed to delete registration record.')
     }
 
     setActionLoadingId(null)
@@ -179,7 +185,7 @@ function AdminPage() {
         Amount: row.amount,
         TransactionId: row.razorpay_payment_id || '',
         Status: row.payment_review_status,
-        PaidAt: row.paid_at ? new Date(row.paid_at).toLocaleString() : '',
+        PaidAt: row.paid_at ? toDate(row.paid_at)?.toLocaleString() : '',
       }))
 
       const worksheet = XLSX.utils.json_to_sheet(exportRows)
@@ -281,7 +287,7 @@ function AdminPage() {
 
           {!isAdmin ? (
             <p className="mt-6 rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-700">
-              This user is not configured as admin in the profiles table.
+              This user is not configured as admin in the profiles collection.
             </p>
           ) : tableLoading ? (
             <p className="mt-6 text-sm text-gray-500">Loading registrations...</p>
@@ -323,7 +329,7 @@ function AdminPage() {
                           {row.payment_status === 'paid' ? 'Paid' : row.payment_status === 'failed' ? 'Failed' : 'Pending'}
                         </span>
                       </td>
-                      <td className="px-4 py-3">{row.paid_at ? new Date(row.paid_at).toLocaleString() : '-'}</td>
+                      <td className="px-4 py-3">{row.paid_at ? toDate(row.paid_at)?.toLocaleString() : '-'}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <button
