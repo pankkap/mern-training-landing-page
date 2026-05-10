@@ -236,29 +236,27 @@ function ModalForm({ open, onClose, resumePayment }) {
       <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
 
         {/* header */}
-        <div className="bg-indigo-600 px-6 py-5">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-indigo-200">
+        <div className="relative bg-indigo-600 px-6 py-5 text-center">
+          <button
+            type="button"
+            onClick={handleClose}
+            className="absolute right-5 top-5 grid h-7 w-7 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+            aria-label="Close"
+          >
+            ✕
+          </button>
+          <div className="mx-auto max-w-sm">
+            <p className="text-xs font-semibold uppercase tracking-widest text-indigo-200">
                 {step === 1 ? `Registration — Rs ${PAYMENT_AMOUNT}` : 'Complete Payment'}
               </p>
-              <h3 className="mt-1 text-xl font-extrabold text-white">
+              <h3 className="mt-1 text-3xl font-extrabold text-white">
                 {step === 1 ? 'Register Now' : `Scan & Pay Rs ${PAYMENT_AMOUNT}`}
               </h3>
-              <div className="mt-3 inline-flex max-w-full rounded-xl border border-white/20 bg-white/10 px-3 py-2 shadow-[0_10px_30px_-18px_rgba(0,0,0,0.45)] backdrop-blur-sm">
-                <p className="text-sm font-semibold leading-6 text-white">
+              <div className="mt-3 w-full rounded-xl border border-white/20 bg-white/10 px-3 py-2 shadow-[0_10px_30px_-18px_rgba(0,0,0,0.45)] backdrop-blur-sm">
+                <p className="text-center text-sm font-semibold leading-6 text-white">
                   Pay Rs {PAYMENT_AMOUNT} now · Fee increases to Rs 10,500 from 1st June 2026
                 </p>
               </div>
-            </div>
-            <button
-              type="button"
-              onClick={handleClose}
-              className="grid h-7 w-7 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
-              aria-label="Close"
-            >
-              ✕
-            </button>
           </div>
         </div>
 

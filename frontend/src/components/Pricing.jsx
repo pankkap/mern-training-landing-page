@@ -16,7 +16,7 @@ function Pricing({ onReserve }) {
       <div className="page-shell">
         <div className="mx-auto max-w-xl overflow-hidden card card-shadow">
           {/* header */}
-          <div className="bg-indigo-600 px-7 py-5">
+          <div className="bg-indigo-600 px-7 py-5 text-center">
             <p className="text-xs font-semibold uppercase tracking-widest text-indigo-200">Full Course Access</p>
             <h2 className="mt-1 text-2xl font-extrabold text-white">MERN Stack Training</h2>
           </div>
@@ -42,7 +42,7 @@ function Pricing({ onReserve }) {
             </div>
 
             <div className="rounded-lg border border-amber-400/30 bg-amber-50 px-4 py-3">
-              <p className="text-sm leading-relaxed text-amber-800">
+              <p className="text-center text-sm leading-relaxed text-amber-800">
                 <span className="font-bold">Register now at Rs. 7,500</span> for first 50 students.
                 Otherwise, the fee will be Rs. 10,500 from{' '}
                 <span className="font-semibold">1st June, 2026</span>.
