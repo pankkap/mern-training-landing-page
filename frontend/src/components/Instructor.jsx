@@ -8,7 +8,8 @@ const expertise = [
   'Backend: Node.js, Express.js, REST API architecture',
   'Databases: MongoDB, MySQL',
   'Cloud/DevOps: AWS, Docker, CI/CD, Linux, GitHub',
-  'Mobile: React Native, Flutter',
+  'Modern Developer Workflow: Postman, VS Code, API Testing, Deployment, AI-Assisted Coding',
+  'Generative AI & Agentic AI: OpenAI, Gemini, Claude, Prompt Engineering, AI Agents, Vibe Coding'
 ]
 
 const credentials = [
@@ -38,7 +39,7 @@ function Instructor() {
               </div>
 
               <h3 className="mt-4 text-xl font-extrabold text-gray-900">Pankaj Kapoor</h3>
-              <p className="mt-1 text-sm text-indigo-700">Director, Beta-Labs</p>
+              <p className="mt-1 text-sm text-indigo-700">Mentor, Beta-Labs</p>
 
               <div className="mt-5 space-y-2 text-left text-xs sm:text-sm">
                 <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-gray-700">
@@ -62,8 +63,6 @@ function Instructor() {
               </p>
 
               <h3 className="mt-3 text-2xl font-extrabold text-gray-900">Pankaj Kapoor</h3>
-              <p className="mt-1 text-sm font-medium text-indigo-700">Director, Beta-Labs</p>
-
               <p className="mt-4 text-sm leading-7 text-gray-600 sm:text-base">
                 Pankaj brings over 15 years of experience training freshers and working professionals in Information
                 Systems and Technology. His teaching approach is practical and project-driven, focused on real-world
