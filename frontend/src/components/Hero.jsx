@@ -46,7 +46,7 @@ function Hero({ onReserve }) {
             </h1>
             <p className="text-lg leading-relaxed text-gray-300">
               Master MongoDB, Express.js, React, and Node.js from scratch.
-              Build real-world full-stack apps and become job-ready in 12 weeks.
+              Build real-world full-stack apps and become job-ready in 4 weeks.
             </p>
 
             {/* rating row */}
@@ -96,7 +96,7 @@ function Hero({ onReserve }) {
             {/* reservation note */}
             <div className="w-full rounded-xl border border-red-400/70 bg-gradient-to-r from-red-600 to-rose-600 px-5 py-3.5 text-left shadow-[0_0_28px_rgba(239,68,68,0.45)] lg:max-w-xl">
               <p className="text-sm leading-relaxed text-white sm:text-[15px]">
-                <span className="font-bold text-white">Register now at Rs. 7,500 for first 50 students.</span>{' '}
+                <span className="font-bold text-white">Register now at Rs. 4,999 for first 50 students.</span>{' '}
                 Otherwise, the fee will be <span className="rounded bg-amber-400/20 px-2 py-0.5 text-xs font-bold uppercase tracking-wide text-amber-400">Rs. 10,500 from 1st June, 2026.</span> Register now.
               </p>
             </div>
@@ -104,10 +104,10 @@ function Hero({ onReserve }) {
             {/* mobile CTA */}
             <div className="flex flex-wrap items-center gap-4 pt-2 lg:hidden">
               <div>
-                <p className="text-3xl font-extrabold">Rs 7,500</p>
+                <p className="text-3xl font-extrabold">Rs 4,999</p>
                 <p className="text-sm text-gray-400 line-through">Rs 10,500</p>
               </div>
-              <CTAButton label="Register Now — Rs 7,500" onClick={onReserve} className="px-8 py-3.5 text-base" />
+              <CTAButton label="Register Now — Rs 4,999" onClick={onReserve} className="px-8 py-3.5 text-base" />
             </div>
           </div>
 
@@ -117,7 +117,7 @@ function Hero({ onReserve }) {
               <div className="space-y-4 p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="text-3xl font-extrabold text-white">Rs 7,500</p>
+                    <p className="text-3xl font-extrabold text-white">Rs 4,999</p>
                     <p className="mt-0.5 text-sm text-gray-400 line-through">Rs 10,500</p>
                     <span className="mt-1.5 inline-block rounded bg-red-500/20 px-2 py-0.5 text-xs font-bold text-red-400">
                       Limited offer — First 50 students
@@ -136,7 +136,7 @@ function Hero({ onReserve }) {
                 {/* reservation note */}
                 <div className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2.5">
                   <p className="text-xs leading-relaxed text-amber-300">
-                    <span className="font-bold">Pay Rs. 7,500 now</span> to secure your seat under this limited offer.
+                    <span className="font-bold">Pay Rs. 4,999 now</span> to secure your seat under this limited offer.
                     Fee becomes Rs. 10,500 from{' '}
                     <span className="font-semibold">1st June 2026</span>.
                   </p>
@@ -147,7 +147,7 @@ function Hero({ onReserve }) {
                   onClick={onReserve}
                   className="w-full rounded-lg bg-indigo-600 py-3.5 text-sm font-bold text-white transition hover:bg-indigo-700"
                 >
-                  Register Now — Rs 7,500
+                  Register Now — Rs 4,999
                 </button>
                 <p className="text-center text-xs text-gray-400">Fee changes to Rs 10,500 from 1st June 2026</p>
 

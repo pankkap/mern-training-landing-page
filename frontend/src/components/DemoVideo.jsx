@@ -11,7 +11,7 @@ function DemoVideo() {
             <iframe
               className="aspect-video w-full"
               src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-              title="MERN Stack Training — Free Preview"
+              title="MERN Stack Bootcamp — Free Preview"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen

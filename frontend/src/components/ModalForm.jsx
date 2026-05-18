@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { doc, serverTimestamp, setDoc, updateDoc } from 'firebase/firestore'
 import { db } from '../lib/firebaseClient'
 
-const PAYMENT_AMOUNT = 7500
+const PAYMENT_AMOUNT = 4999
 const initialForm = { name: '', email: '', phone: '' }
 const PENDING_REGISTRATION_KEY = 'pending_registration_id'
 const PENDING_PAYMENT_UPDATE_KEY = 'pending_payment_update'
@@ -160,7 +160,7 @@ function ModalForm({ open, onClose, resumePayment }) {
       key: RAZORPAY_KEY_ID,
       amount: PAYMENT_AMOUNT * 100,
       currency: 'INR',
-      name: 'MERN Stack Training',
+      name: 'MERN Stack Bootcamp',
       description: 'Course Registration Fee',
       prefill: {
         name: form.name || undefined,

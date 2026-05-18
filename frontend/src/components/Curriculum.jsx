@@ -55,7 +55,7 @@ function Curriculum() {
       <div className="page-shell">
         <h2 className="section-heading">Course Curriculum</h2>
         <p className="mt-2 text-sm text-gray-500">
-          {sections.length} sections &bull; {totalLectures} lectures &bull; 22 hours total length
+          {sections.length} sections &bull; {totalLectures} lectures &bull; 50 hours total length
         </p>
 
         <div className="mt-6 overflow-hidden card card-shadow">

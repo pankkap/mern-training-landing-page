@@ -8,11 +8,11 @@ function Footer() {
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-sm font-extrabold text-white">
               M
             </span>
-            <p className="text-base font-bold text-white">MERN Stack Training</p>
+            <p className="text-base font-bold text-white">MERN Stack Bootcamp</p>
           </div>
           <p className="mt-3 text-sm">betalabsindia@gmail.com</p>
           <p className="mt-1 text-xs text-gray-500">
-            © {new Date().getFullYear()} MERN Stack Training. All rights reserved.
+            © {new Date().getFullYear()} MERN Stack Bootcamp. All rights reserved.
           </p>
         </div>
 

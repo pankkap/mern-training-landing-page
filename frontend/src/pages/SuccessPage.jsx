@@ -59,7 +59,7 @@ function SuccessPage() {
         </div>
         <h1 className="text-3xl font-bold text-gray-900">Seat Reserved!</h1>
         <p className="mt-3 text-sm text-gray-600">
-          Thank you for registering for <strong>MERN Stack Training</strong>.<br />
+          Thank you for registering for <strong>MERN Stack Bootcamp</strong>.<br />
           Your seat will be confirmed within 2 hours after payment verification.
         </p>
         <p className="mt-4 text-sm text-gray-500">

@@ -15,7 +15,7 @@ function Navbar({ onReserve }) {
           <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-indigo-600 text-sm font-bold text-white">
             M
           </span>
-          <span className="text-base font-bold text-gray-900">MERN Stack Training</span>
+          <span className="text-base font-bold text-gray-900">MERN Stack Bootcamp</span>
         </a>
         <div className="hidden items-center gap-8 lg:flex">
           {links.map((link) => (

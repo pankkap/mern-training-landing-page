@@ -11,8 +11,8 @@ const faqs = [
     a: 'Absolutely. Once enrolled, you have lifetime access to all course videos, downloadable resources, and any future updates — on any device.',
   },
   {
-    q: 'Is Rs 7,500 the full course price?',
-    a: 'Yes, Rs 7,500 is the current limited price for the first 50 students. After 1st June, 2026, the fee will be Rs 10,500.',
+    q: 'Is Rs 4,999 the full course price?',
+    a: 'Yes, Rs 4,999 is the current limited price for the first 50 students. After 1st June, 2026, the fee will be Rs 10,500.',
   },
   {
     q: 'What is your refund policy?',

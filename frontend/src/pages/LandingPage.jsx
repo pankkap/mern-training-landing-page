@@ -60,7 +60,7 @@ function LandingPage() {
 
       {/* mobile sticky CTA */}
       <div className="fixed inset-x-0 bottom-0 z-30 border-t border-gray-200 bg-white px-4 py-3 md:hidden">
-        <CTAButton label="Register Now — Rs 7,500" onClick={openRegistrationModal} className="w-full" />
+        <CTAButton label="Register Now — Rs 4,999" onClick={openRegistrationModal} className="w-full" />
       </div>
 
       {/* desktop floating CTA */}

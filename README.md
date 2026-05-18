@@ -1,4 +1,4 @@
-    # MERN Stack Training - Landing Page
+    # MERN Stack Bootcamp - Landing Page
 
 Course landing page with registration form, Razorpay payment flow, and admin dashboard.
 
